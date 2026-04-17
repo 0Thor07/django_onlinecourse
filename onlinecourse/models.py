@@ -29,3 +29,12 @@ class Submission(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     choices = models.ManyToManyField(Choice)
+class Instructor(models.Model):
+    name = models.CharField(max_length=100)
+
+class Learner(models.Model):
+    name = models.CharField(max_length=100)
+
+class Lesson(models.Model):
+    title = models.CharField(max_length=200)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)

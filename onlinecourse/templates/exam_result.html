@@ -6,8 +6,8 @@
 </head>
 <body class="container mt-5">
 
-    <h2 class="mb-4">Your Score: {{ score }}%</h2>
-
+    <h2>🎉 Congratulations!</h2>
+    <h3>Your Score: {{ score }}%</h3>
     {% for question in submission.course.question_set.all %}
         <div class="card mb-3 p-3">
             <h5>{{ question.question_text }}</h5>
