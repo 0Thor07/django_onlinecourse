@@ -29,6 +29,7 @@ class Submission(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     choices = models.ManyToManyField(Choice)
+
 class Instructor(models.Model):
     name = models.CharField(max_length=100)
 

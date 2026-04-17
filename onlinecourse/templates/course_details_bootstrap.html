@@ -7,6 +7,12 @@
 <body class="container mt-5">
 
     <h2 class="mb-4">{{ course.name }}</h2>
+    <h4>Lessons</h4>
+<ul>
+{% for lesson in course.lesson_set.all %}
+    <li>{{ lesson.title }}</li>
+{% endfor %}
+</ul>
 
     <form method="POST" action="{% url 'submit_exam' course.id %}">
         {% csrf_token %}

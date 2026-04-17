@@ -14,7 +14,7 @@ def home(request):
 
 def course_detail(request, course_id):
     course = Course.objects.get(id=course_id)
-    return render(request, 'course_detail.html', {'course': course})
+    return render(request, 'course_details_bootstrap.html', {'course': course})
 
 def submit_exam(request, course_id):
     if request.method == "POST":
@@ -27,7 +27,7 @@ def submit_exam(request, course_id):
 
         submission.choices.set(selected_choices)
 
-        return redirect('exam_result', submission.id)
+        return redirect('show_exam_result', submission.id)
 def calculate_score(submission):
     total = 0
     correct = 0
@@ -42,11 +42,11 @@ def calculate_score(submission):
             correct += 1
 
     return (correct / total) * 100
-def exam_result(request, submission_id):
+def show_exam_result(request, submission_id):
     submission = Submission.objects.get(id=submission_id)
     score = calculate_score(submission)
 
-    return render(request, 'exam_result.html', {
+    return render(request, 'show_exam_result.html', {
         'submission': submission,
         'score': score
     })
