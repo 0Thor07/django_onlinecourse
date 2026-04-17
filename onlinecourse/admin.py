@@ -11,9 +11,11 @@ class QuestionInline(admin.TabularInline):
 
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [ChoiceInline]
+    search_fields = ('question_text',)
 
 class LessonAdmin(admin.ModelAdmin):
     list_display = ('title', 'course')
+    search_fields = ('title',)
 
 class CourseAdmin(admin.ModelAdmin):
     inlines = [QuestionInline]

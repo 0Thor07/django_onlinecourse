@@ -26,16 +26,31 @@ class Choice(models.Model):
 
 
 class Submission(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     choices = models.ManyToManyField(Choice)
+
+    def __str__(self):
+        return f"Submission {self.id}"
+
 
 class Instructor(models.Model):
     name = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.name
+
+
 class Learner(models.Model):
     name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
 
 class Lesson(models.Model):
     title = models.CharField(max_length=200)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title

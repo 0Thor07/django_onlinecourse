@@ -1,52 +1,56 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Course, Submission, Choice
 
-# Create your views here.
-from django.http import HttpResponse
-from django.shortcuts import redirect
-from .models import Submission, Choice
-from django.shortcuts import render
-from .models import Course
-
-
-def home(request):
-    return HttpResponse("Hello, Django is working!")
-
-
+# Show course details (with questions & choices)
 def course_detail(request, course_id):
-    course = Course.objects.get(id=course_id)
+    course = get_object_or_404(Course, pk=course_id)
     return render(request, 'course_details_bootstrap.html', {'course': course})
 
+
+# Handle exam submission
 def submit_exam(request, course_id):
-    if request.method == "POST":
+    course = get_object_or_404(Course, pk=course_id)
+
+    if request.method == 'POST':
         selected_choices = request.POST.getlist('choice')
 
-        submission = Submission.objects.create(
-            user=request.user,
-            course_id=course_id
-        )
+        # Create submission
+        submission = Submission.objects.create(course=course, user=None)
 
-        submission.choices.set(selected_choices)
+        # Add selected choices
+        for choice_id in selected_choices:
+            choice = Choice.objects.get(id=int(choice_id))
+            submission.choices.add(choice)
 
-        return redirect('show_exam_result', submission.id)
-def calculate_score(submission):
+        submission.save()
+
+        return redirect('show_exam_result', submission_id=submission.id)
+
+    return redirect('course_detail', course_id=course.id)
+
+
+# Show exam result
+def show_exam_result(request, submission_id):
+    submission = get_object_or_404(Submission, pk=submission_id)
+    course = submission.course
+
+    selected_choices = submission.choices.all()
+
     total = 0
     correct = 0
 
-    for question in submission.course.question_set.all():
-        total += 1
+    # Calculate score
+    for question in course.question_set.all():
+        for choice in question.choice_set.all():
+            if choice.is_correct:
+                total += 1
+                if choice in selected_choices:
+                    correct += 1
 
-        correct_choices = question.choice_set.filter(is_correct=True)
-        selected_choices = submission.choices.filter(question=question)
+    score = (correct / total) * 100 if total > 0 else 0
 
-        if set(correct_choices) == set(selected_choices):
-            correct += 1
-
-    return (correct / total) * 100
-def show_exam_result(request, submission_id):
-    submission = Submission.objects.get(id=submission_id)
-    score = calculate_score(submission)
-
-    return render(request, 'show_exam_result.html', {
+    return render(request, 'exam_result.html', {
         'submission': submission,
-        'score': score
+        'course': course,
+        'score': score,
     })
